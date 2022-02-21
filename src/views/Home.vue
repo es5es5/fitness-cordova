@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <swiper class="swiper">
+    <swiper class="swiper" ref="mySwiper" :options="swiperOptionh">
       <swiper-slide>
         <div class="barcode_wrap">
           <img src="@/assets/images/이경근.png" alt="이경근" class="barcode">
@@ -27,6 +27,24 @@
 <script>
 export default {
   name: 'Home',
+  data () {
+    return {
+      swiperOptionh: {
+        slidesPerView: 1,
+        loop: true
+      },
+      swiperOptionv: {
+        slidesPerView: 1,
+        direction: 'vertical',
+        loop: true
+      }
+    }
+  },
+  computed: {
+  },
+  mounted () {
+    // this.$refs.mySwiper.$swiper.slideTo(3, 0)
+  }
 }
 </script>
 
@@ -34,35 +52,41 @@ export default {
 .barcode_wrap {
   position: relative;
 }
+
 .barcode {
   width: 100%;
   height: 100vh;
+  vertical-align: bottom;
 }
+
 .name1 {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   font-size: 20px;
   font-weight: bold;
 }
+
 .name2 {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: 12px;
+  right: 12px;
   font-size: 20px;
   font-weight: bold;
 }
+
 .name3 {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 12px;
+  left: 12px;
   font-size: 20px;
   font-weight: bold;
 }
+
 .name4 {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
+  bottom: 12px;
+  left: 12px;
   font-size: 20px;
   font-weight: bold;
 }
