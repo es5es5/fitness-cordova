@@ -2,32 +2,7 @@
   <div class="home">
     <swiper class="swiper" ref="mySwiper" :options="swiperOptionh">
       <swiper-slide>
-        <div class="calendar_wrap">
-          <v-calendar
-            disable-page-swipe
-            is-expanded
-            :rows="2"
-            :attributes='attributes'
-          >
-          <template #day-popover="{ day, attributes }">
-            <div>
-              <div class="text-xs text-gray-300 font-semibold text-center">
-                {{ getToDateFormat(day.date, 'YYYY-MM-DD ddd') }}
-              </div>
-              <popover-row
-                v-for="attr in attributes"
-                :key="attr.key"
-                :attribute="attr">
-                {{ attr.customData.description }}
-              </popover-row>
-            </div>
-          </template>
-          </v-calendar>
-        </div>
-        <div class="action_wrap text-left">
-          <button type="button" class="btn white 이경근">이경근</button>
-          <button type="button" class="btn white 이환웅" style="float: right;">이환웅</button>
-        </div>
+        <Calendar />
       </swiper-slide>
       <swiper-slide>
         <div class="barcode_wrap">
@@ -53,38 +28,15 @@
 </template>
 
 <script>
-import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min'
+import Calendar from '../components/Calendar.vue'
 
 export default {
   name: 'Home',
   components: {
-    PopoverRow
+    Calendar
   },
   data () {
     return {
-      calendar: [
-        {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
-          dates: new Date(2022, 2, 11),
-          color: 'red',
-        }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
-          dates: new Date(2022, 2, 11),
-          color: 'blue',
-        }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
-          dates: new Date(2022, 2, 15),
-          color: 'blue',
-        }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
-          dates: new Date(2022, 2, 15),
-          color: 'blue',
-        },
-      ],
       swiperOptionh: {
         slidesPerView: 1,
         // loop: true
@@ -96,33 +48,6 @@ export default {
       }
     }
   },
-  computed: {
-    attributes () {
-      return [
-        ...this.calendar.map(date => ({
-          dates: date.dates,
-          format: 'YYYY-MM-DD',
-          dot: {
-            color: date.color,
-            class: date.isComplete ? 'opacity-75' : '',
-          },
-          popover: {
-            label: date.description,
-            visibility: 'click',
-            format: 'YYYY-MM-DD',
-          },
-          customData: date,
-        })),
-      ]
-    },
-  },
-  methods: {
-    getToDateFormat (value, format) {
-      let _format = format
-      if (!_format) _format = 'YYYY-MM-DD'
-      return moment(value).locale('ko').format(_format)
-    }
-  }
 }
 </script>
 
@@ -169,17 +94,4 @@ export default {
   font-weight: bold;
 }
 
-.calendar_wrap {
-  padding: 40px;
-}
-.action_wrap {
-  padding: 0 40px;
-
-  .btn {
-    // background-color: #fff;
-    font-weight: bolder;
-    &.이경근 { color: hotpink; }
-    &.이환웅 { color: blue; }
-  }
-}
 </style>
