@@ -10,6 +10,9 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint'
   },
+  globals: {
+    moment: true,
+  },
   rules: {
     'comma-dangle': 0,
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
