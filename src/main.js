@@ -12,10 +12,13 @@ import VCalendar from 'v-calendar'
 // import style (<= Swiper 5.x)
 import 'swiper/css/swiper.css'
 
+import COMMON from '@/js/common'
+
 Vue.use(VueAwesomeSwiper, /* { default options with global component } */)
 Vue.use(VCalendar, {})
 
 Vue.config.productionTip = false
+Vue.prototype.COMMON = COMMON
 
 new Vue({
   router,

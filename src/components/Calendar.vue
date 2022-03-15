@@ -10,60 +10,55 @@
       <template #day-popover="{ day, attributes }">
         <div>
           <div class="text-xs text-gray-300 font-semibold text-center">
-            {{ getToDateFormat(day.date, 'YYYY-MM-DD ddd') }}
+            {{ COMMON.getToDateFormat(day.date, 'YYYY-MM-DD ddd') }}
           </div>
           <popover-row
             v-for="attr in attributes"
             :key="attr.key"
             :attribute="attr">
-            {{ attr.customData.description }}
+            {{ attr.customData.name }}
           </popover-row>
         </div>
       </template>
       </v-calendar>
     </div>
     <div class="action_wrap text-left">
-      <button type="button" class="btn white 이경근">이경근</button>
-      <button type="button" class="btn white 이환웅" style="float: right;">이환웅</button>
+      <button type="button" class="btn white 이경근" @click="doStamp('이경근')">이경근</button>
+      <button type="button" class="btn white 이환웅" style="float: right;" @click="doStamp('이환웅')">이환웅</button>
     </div>
   </div>
 </template>
 
 <script>
 import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
 import { firestore } from '@/plugins/firebase'
 
 export default {
   name: 'Calendar',
   created () {
-    this.getIdolList()
+    this.getCalendarList()
   },
   components: {
     PopoverRow
   },
   data () {
     return {
-      idol: [],
       calendar: [
         {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
+          name: 'Take Noah to basketball practice.',
           dates: new Date(2022, 2, 11),
           color: 'red',
         }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
+          name: 'Take Noah to basketball practice.',
           dates: new Date(2022, 2, 11),
           color: 'blue',
         }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
+          name: 'Take Noah to basketball practice.',
           dates: new Date(2022, 2, 15),
           color: 'blue',
         }, {
-          description: 'Take Noah to basketball practice.',
-          isComplete: true,
+          name: 'Take Noah to basketball practice.',
           dates: new Date(2022, 2, 15),
           color: 'blue',
         },
@@ -74,14 +69,13 @@ export default {
     attributes () {
       return [
         ...this.calendar.map(date => ({
-          dates: date.dates,
+          dates: new Date(date.dates.seconds * 1000),
           format: 'YYYY-MM-DD',
           dot: {
             color: date.color,
-            class: date.isComplete ? 'opacity-75' : '',
           },
           popover: {
-            label: date.description,
+            label: date.name,
             visibility: 'click',
             format: 'YYYY-MM-DD',
           },
@@ -91,12 +85,17 @@ export default {
     },
   },
   methods: {
-    getToDateFormat (value, format) {
-      let _format = format
-      if (!_format) _format = 'YYYY-MM-DD'
-      return moment(value).locale('ko').format(_format)
+    async doStamp (name) {
+      if (confirm(`${moment().locale('ko').format('YYYY년 MM월 DD일 HH:mm')}\n${name} 출석`)) {
+        await setDoc(doc(firestore, process.env.VUE_APP_FIRESTORE_COLLECTION, this.COMMON.UUID()), {
+          name: name,
+          dates: new Date(),
+          color: name === '이경근' ? 'red' : 'blue',
+        })
+      }
+      this.getCalendarList()
     },
-    async getIdolList () {
+    async getCalendarList () {
       const list = []
       const querySnapshot = await getDocs(collection(firestore, process.env.VUE_APP_FIRESTORE_COLLECTION))
       querySnapshot.forEach((doc) => {
@@ -105,7 +104,7 @@ export default {
           ...doc.data()
         })
       })
-      this.idol = list
+      this.calendar = list
     }
   }
 }
