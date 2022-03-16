@@ -5,7 +5,7 @@
         disable-page-swipe
         is-expanded
         :rows="2"
-        :attributes='attributes'
+        :attributes="attributes"
       >
       <template #day-popover="{ day, attributes }">
         <div>
@@ -14,9 +14,12 @@
           </div>
           <popover-row
             v-for="attr in attributes"
-            :key="attr.key"
+            :key="attr.customData.id"
             :attribute="attr">
-            {{ attr.customData.name }}
+            <span>
+              {{ attr.customData.name }}
+            </span>
+            <span class="delete" @click.prevent="doDelete(attr.customData.id)">✖️</span>
           </popover-row>
         </div>
       </template>
@@ -31,7 +34,7 @@
 
 <script>
 import PopoverRow from 'v-calendar/lib/components/popover-row.umd.min'
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore'
 import { firestore } from '@/plugins/firebase'
 
 export default {
@@ -45,23 +48,6 @@ export default {
   data () {
     return {
       calendar: [
-        {
-          name: 'Take Noah to basketball practice.',
-          dates: new Date(2022, 2, 11),
-          color: 'red',
-        }, {
-          name: 'Take Noah to basketball practice.',
-          dates: new Date(2022, 2, 11),
-          color: 'blue',
-        }, {
-          name: 'Take Noah to basketball practice.',
-          dates: new Date(2022, 2, 15),
-          color: 'blue',
-        }, {
-          name: 'Take Noah to basketball practice.',
-          dates: new Date(2022, 2, 15),
-          color: 'blue',
-        },
       ],
     }
   },
@@ -69,15 +55,13 @@ export default {
     attributes () {
       return [
         ...this.calendar.map(date => ({
-          dates: new Date(date.dates.seconds * 1000),
-          format: 'YYYY-MM-DD',
+          id: date.id,
+          dates: date.dates,
           dot: {
             color: date.color,
           },
           popover: {
-            label: date.name,
             visibility: 'click',
-            format: 'YYYY-MM-DD',
           },
           customData: date,
         })),
@@ -89,7 +73,7 @@ export default {
       if (confirm(`${moment().locale('ko').format('YYYY년 MM월 DD일 HH:mm')}\n${name} 출석`)) {
         await setDoc(doc(firestore, process.env.VUE_APP_FIRESTORE_COLLECTION, this.COMMON.UUID()), {
           name: name,
-          dates: new Date(),
+          dates: moment().format('YYYY-MM-DD'),
           color: name === '이경근' ? 'red' : 'blue',
         })
       }
@@ -105,7 +89,14 @@ export default {
         })
       })
       this.calendar = list
-    }
+    },
+    async doDelete (id) {
+      console.log(id)
+      if (confirm('삭제하시겠습니까?')) {
+        await deleteDoc(doc(firestore, process.env.VUE_APP_FIRESTORE_COLLECTION, id))
+      }
+      this.getCalendarList()
+    },
   }
 }
 </script>
@@ -123,5 +114,9 @@ export default {
     &.이경근 { color: hotpink; }
     &.이환웅 { color: blue; }
   }
+}
+
+.delete {
+  padding: 2px 4px;
 }
 </style>
